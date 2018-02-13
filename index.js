@@ -121,7 +121,7 @@ const arrParser = (input) => {
     while (input[0] !== ']' && result !== null) {
       console.log('Previous value: ', prev)
       console.log('Current input: ', input)
-      result = valueParser(input)
+      result = valueParser(input) || commaparser(input) || whiteSpaceParser(input)
       if (result === null) {
         return null
       } else if (result[0] !== ',' && result[0] !== ' ') {
@@ -160,10 +160,9 @@ const objParser = (input) => {
 const valueParser = (input) => {
   return nullParser(input) || boolParser(input) ||
   numParser(input) || strParser(input) ||
-  arrParser(input) || objParser(input) ||
-  commaparser(input) || whiteSpaceParser(input)
+  arrParser(input) || objParser(input)
 }
 
-var str = '[[1],[2],["ramya"]]'
+var str = '  '
 str = valueParser(str)
 console.log(str)
