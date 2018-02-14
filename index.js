@@ -1,4 +1,4 @@
-const fs = require('fs')
+// const fs = require('fs')
 const nullParser = (input) => {
   let nullValue = input.slice(0, 4)
   if (nullValue === 'null') {
@@ -31,12 +31,13 @@ const numParser = (input) => {
   let prev = ''
   let outputNum = ''
   if (prev === '') {
-    if (input[0] === '-' || (input[0] > 0 && input[0] <= 9)) {
+    if (input[0] === '-' || (input[0] >= 0 && input[0] <= 9)) {
       prev = input[0]
       outputNum += prev
       let i = 1
       while ((input[i] >= 0 && input[i] <= 9 || input[i] === 'e' ||
     input[i] === 'E' || input[i] === '.') && i < input.length) {
+        
         prev = input[i]
         outputNum += input[i]
         i++
@@ -58,7 +59,7 @@ const numParser = (input) => {
 }
 
 const strParser = (input) => {
-  console.log('STRING PARSER')
+  console.log('STRING PARSER', input)
   console.log('STR PARSER: Begins with, ', input[0])
   let outputStr = ''
   let inpLength = input.length
@@ -68,7 +69,7 @@ const strParser = (input) => {
     input = input.slice(1)
     let i = 1
     console.log('Inp before starting the parser', input)
-    while (input[0] !== '"' && input[0] !== '\\' && i < inpLength) {
+    while (input[0] !== '"' && i < inpLength) {
       console.log('Input length: ', inpLength)
       console.log('i ', i)
       console.log('input ', input)
@@ -76,36 +77,48 @@ const strParser = (input) => {
       outputStr += prev
       input = input.slice(1)
       i++
-    }
+      prev = input[0]
+      if (prev === '\\') {
+        outputStr += prev
+        console.log('encountered a control character')
 
-    prev = input[0]
-    if (prev === '"') {
-      return [outputStr, input.slice(1)]
-    } else if (prev === '\\') {
-    //   console.log('encountered a control character')
-    //   input = input.slice(1)
-    //   if (input[0] === 'u') {
-    //     prev = input[0]
-    //     outputStr += prev
-    //     let i = 0
-    //     input = input.slice(1)
-    //     while (input[0] >= 'A' || input[0] <= 'F' || input[0] >= 0 ||
-    //       input[i] <= 9 && input[0] !== '"' && i < 4) {
-    //       prev = input[0]
-    //       outputStr += input[0]
-    //       input = input.slice(1)
-    //       i++
-    //     }
-    //     prev = input[0]
-    //     if (i > 3 && prev === '"') {
-    //       return [outputStr, input.slice(1)]
-    //     } else {
-    //       return null
-    //     }
-    //   }
-    // } else {
-    //   return null
-    }
+        input = input.slice(1)
+        i++
+        let nextChar = input[0] === '"' || input[0] === '\\' || input[0] === '/' ||
+        input[0] === 'b' || input[0] === 'f' || input[0] === 'n' ||
+        input[0] === 'r' || input[0] === 't' || input[0] === 'u'
+        console.log(nextChar)
+        if (nextChar === false) {
+          return null
+        } else if (input[0] === 'u') {
+          console.log('hexadecimal')
+          prev = input[0]
+          outputStr += prev
+          let numHex = 1
+          input = input.slice(1)
+          while (((input[0] >= 'A' && input[0] <= 'F') ||
+          (input[0] >= 'a' && input[0] <= 'f') || input[0] >= 0 ||
+          input[0] <= 9 && input[0] !== '"') && numHex <= 4) {
+            console.log(' reading ' + i + ' th character after \\u ' + input[0])
+            prev = input[0]
+            outputStr += input[0]
+            input = input.slice(1)
+            numHex++
+          }
+          prev = input[0]
+          if (numHex === 5) {
+            continue
+          } else {
+            return null
+          }
+        } else {
+          console.log(input[0])
+          prev = input[0]
+          outputStr += prev
+        }
+      } // end of control char check
+    } // end of while
+    return [outputStr, input.slice(1)]
   } else return null
 }
 
@@ -216,13 +229,13 @@ const objParser = (input) => {
             if (separator[0] === ':') {
               colonEncountered = separator[0]
             }
-            
+
             input = separator[1]
             console.log('still inside separator', separator)
             console.log('input after consuming separator ' + separator[0] + 'is ' + input)
           }
         }
-        if (!colonEncountered){
+        if (!colonEncountered) {
           return null
         }
         result = valueParser(input)
@@ -242,7 +255,7 @@ const objParser = (input) => {
 
             console.log(input)
           }
-          
+
           separator = commaParser(input) || input[0] === '}'
           console.log('Expecting comma. Found ', separator)
           if (separator === null || separator === false) {
@@ -266,9 +279,8 @@ const objParser = (input) => {
     } // end of while loop
     console.log('End of object encountered', outputStr)
     // if (input !== undefined){
-      return [outputStr, input.slice(1)]
+    return [outputStr, input.slice(1)]
     // } else return null
-    
   } else return null
 }
 
@@ -278,47 +290,8 @@ const valueParser = (input) => {
   arrParser(input) || objParser(input)
 }
 
-// var str = fs.readFileSync('reddit.json','utf8')
-let str = `{
-	"name": "App",
-	"icons": [{
-			"src": "android-icon-36x36.png",
-			"sizes": "36x36",
-			"type": "imagepng",
-			"density": "0.75"
-		},
-		{
-			"src": "android-icon-48x48.png",
-			"sizes": "48x48",
-			"type": "imagepng",
-			"density": "1.0"
-		},
-		{
-			"src": "android-icon-72x72.png",
-			"sizes": "72x72",
-			"type": "imagepng",
-			"density": "1.5"
-		},
-		{
-			"src": "android-icon-96x96.png",
-			"sizes": "96x96",
-			"type" "imagepng",
-			"density": "2.0"
-		},
-		{
-			"src": "android-icon-144x144.png",
-			"sizes": "144x144",
-			"type": "imagepng",
-			"density": "3.0"
-		},
-		{
-			"src": "android-icon-192x192.png",
-			"sizes": "192x192",
-			"type": "imagepng",
-			"density": "4.0"
-		}
-	]
-}}`
-// console.log (str)
+// let str = fs.readFileSync('reddit.json','utf8')
+let str = `0`
+
 str = valueParser(str)
 console.log(str)
