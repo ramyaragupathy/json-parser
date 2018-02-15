@@ -1,5 +1,11 @@
 # json-parser
 
+## development
+
+`npm install`
+
+## usage
+
 ### What is JSON?
  JSON (JavaScript Object Notation) is a way to pack an object into a string, so that it can be transferred somewhere & later unpacked into an object. It is _**textual, language-independent, data exchange format**_ similar to CSV, XML, YAML,etc.
 
