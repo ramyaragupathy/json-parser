@@ -24,5 +24,7 @@
     "url": "https://github.com/ramyaragupathy/json-parser/issues"
   },
   "homepage": "https://github.com/ramyaragupathy/json-parser#readme",
-  "dependencies": {}
+  "dependencies": {
+    "fs": "0.0.1-security"
+  }
 }
