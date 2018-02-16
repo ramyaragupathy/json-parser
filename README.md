@@ -1,12 +1,12 @@
 # json-parser
 
 ## development
-
+`git clone git@github.com:ramyaragupathy/json-parser.git`
 `npm install`
 
 ## usage
 
-`node index.js <filepath>`
+`json-rdparse <filepath>`
 
 ### What is JSON?
  JSON (JavaScript Object Notation) is a way to pack an object into a string, so that it can be transferred somewhere & later unpacked into an object. It is _**textual, language-independent, data exchange format**_ similar to CSV, XML, YAML,etc.
