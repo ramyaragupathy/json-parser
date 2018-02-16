@@ -1,6 +1,6 @@
 {
   "name": "json-rdparse",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "JSON parser using recursive descent",
   "main": "index.js",
   "scripts": {
