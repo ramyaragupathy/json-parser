@@ -1,6 +1,6 @@
 {
   "name": "json-rdparse",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "JSON parser using recursive descent",
   "main": "index.js",
   "scripts": {
@@ -18,11 +18,11 @@
     "parser",
     "node"
   ],
-  "author": "Ramya Ragupathy",
+  "author": "Ramya Ragupathy <r.ragupathy85@gmail.com>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/ramyaragupathy/json-parser/issues"
   },
-  "homepage": "https://github.com/ramyaragupathy/json-parser#readme"
-} 
-
+  "homepage": "https://github.com/ramyaragupathy/json-parser#readme",
+  "dependencies": {}
+}
