@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 const nullParser = (input) => {
-  let nullValue = input.slice(0, 4)
-  if (nullValue === 'null') {
-    input = input.slice(4, input.length)
-    return [null, input]
+  if (input.startsWith('null')) {
+    return [null, input.slice(4, input.length)]
   } else return null
 }
 

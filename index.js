@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 const fs = require('fs')
 const parser = require('./src/parser.js')
 const fileName = process.argv[2]
@@ -13,7 +12,7 @@ if (jsonStr === null) {
 } else if (jsonStr[1] !== '') {
   jsonStr[1] = jsonStr[1].trim()
   if (jsonStr[1] !== '') {
-    console.log(message[0], jsonStr[1])
+    console.log(message[0])
   } else {
     console.log(jsonStr[0])
   }
