@@ -1,7 +1,8 @@
 # json-parser
 
 ## development
-`git clone git@github.com:ramyaragupathy/json-parser.git`
+`git clone git@github.com:ramyaragupathy/json-parser.git` 
+<br>
 `npm install`
 
 ## usage
