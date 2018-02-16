@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const fs = require('fs')
 const parser = require('./src/parser.js')
 const fileName = process.argv[2]

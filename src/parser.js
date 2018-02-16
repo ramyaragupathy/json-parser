@@ -1,4 +1,4 @@
-
+#!/usr/bin/env node
 const nullParser = (input) => {
   let nullValue = input.slice(0, 4)
   if (nullValue === 'null') {
