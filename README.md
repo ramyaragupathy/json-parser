@@ -38,20 +38,14 @@ _[From stackoverflow](https://stackoverflow.com/questions/8294088/javascript-obj
 
 Here I'm listing a few scenarios based on RFC 7159 standard. Online validators gives results based on the standard adapted in their websites. Most recent specifiation is RFC 8259 released in December 2017.
 
-Valid | Invalid
-------|--------
- 0 |01
-[]| [
-{} | }
-""|''
-[1,2,3], [1,]
-["1", "2", 3]|['1','2', '3']
-"abc" | "abc
-"abc\""|"abc\"
-"abc\u0123"|"abc\u012"
-{"a":"b"}|{'a':'b'}
-{"a":8}|{a:8}
-{"a":{"b":{"c":"d"}}}|
+**Valid**
+
+`0`,`[]`,`{}`,`""`,`[1,2,3]`,`["1", "2", 3]`,`["1", "2", 3]`,`"abc"`,`"abc\""`,`"abc\u0123"`,`{"a":"b"}`,`{"a":8}`, `{"a":{"b":{"c":"d"}}}`
+
+**Invalid**
+
+`01`, `[`, `}`,`''`, `[1,]`,`['1','2', '3']`,`"abc`,`"abc\"`,`"abc\u012"`,`{'a':'b'}`, `{a:8}`
+
 
 
 
