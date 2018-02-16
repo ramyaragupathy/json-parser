@@ -1,13 +1,17 @@
 # json-parser
 
 ## development
+
 `git clone git@github.com:ramyaragupathy/json-parser.git` 
 <br>
 `npm install`
 
 ## usage
 
+`npm install json-rdparse -g`
+<br>
 `json-rdparse <filepath>`
+
 
 ### What is JSON?
  JSON (JavaScript Object Notation) is a way to pack an object into a string, so that it can be transferred somewhere & later unpacked into an object. It is _**textual, language-independent, data exchange format**_ similar to CSV, XML, YAML,etc.
@@ -34,7 +38,6 @@ _[From stackoverflow](https://stackoverflow.com/questions/8294088/javascript-obj
 
 Here I'm listing a few scenarios based on RFC 7159 standard. Online validators gives results based on the standard adapted in their websites. Most recent specifiation is RFC 8259 released in December 2017.
 
-#### Valid
 Valid | Invalid
 ------|--------
  0 |01
@@ -48,7 +51,7 @@ Valid | Invalid
 "abc\u0123"|"abc\u012"
 {"a":"b"}|{'a':'b'}
 {"a":8}|{a:8}
-{"a":{"b":{"c":"d"}}}
+{"a":{"b":{"c":"d"}}}|
 
 
 
