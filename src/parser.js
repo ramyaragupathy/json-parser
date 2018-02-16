@@ -66,35 +66,24 @@ const numParser = (input) => {
 }
 
 const strParser = (input) => {
-  //console.log('STR PARSER')
   let outputStr = ''
   let inpLength = input.length
   let prev = ''
-  // console.log(input)
   if (input[0] === '"') {
-    // console.log('input ', input)
     input = input.slice(1)
     let i = 1
-    // console.log('Now the first character is ', input[0])
     while (input[0] !== '"' && i < inpLength) {
-      // console.log('entered while loop')
       prev = input[0]
-      // console.log('prev before further operations : ', prev)
       outputStr += prev
       input = input.slice(1)
       i++
-      
       if (prev === '\\') {
-        // console.log('encountered a control character')
         outputStr = outputStr.slice(0, -1)
         prev = input[0]
-        // console.log('prev after further operations : ', prev)
-        
         i++
         let nextChar = (input[0] === '"' || input[0] === '\\' || input[0] === '/' ||
         input[0] === 'b' || input[0] === 'f' || input[0] === 'n' ||
         input[0] === 'r' || input[0] === 't' || input[0] === 'u')
-        // console.log(nextChar, input[0])
         if (nextChar === false) {
           return null
         } else if (input[0] === 'u') {
@@ -111,7 +100,6 @@ const strParser = (input) => {
             numHex++
             hexCode += prev
           }
-
           prev = input[0]
           if (numHex === 5) {
             outputStr += String.fromCharCode(hexCode)
@@ -121,9 +109,6 @@ const strParser = (input) => {
             return null
           }
         } else {
-          // console.log('escape character found ')
-          // outputStr += prev
-          // console.log(input[0])
           prev = input[0]
           outputStr += prev
           input = input.slice(1)
@@ -171,7 +156,6 @@ const arrParser = (input) => {
     let outputArr = []
     let result
     input = input.slice(1)
-    // console.log(input)
     while (input[0] !== ']' && result !== null) {
       while (whiteSpaceParser(input) !== null || specialCharParser(input) !== null) {
         input = input.slice(1)
@@ -214,15 +198,12 @@ const colonParser = (input) => {
   }
 }
 const objParser = (input) => {
-  // console.log('OBJ PARSER')
   if (input[0] === '{') {
-    // console.log('Testing for ', input)
     let outputStr = {}
     input = input.slice(1)
     let result
 
     while (input[0] !== '}' && result !== null) {
-      // console.log('input is ', input)
       while (whiteSpaceParser(input) !== null || specialCharParser(input) !== null) {
         input = input.slice(1)
       }
@@ -231,7 +212,6 @@ const objParser = (input) => {
       if (result !== null) {
         input = result[1]
         let key = result[0]
-        // console.log('key is ', key)
         outputStr[result[0]] = undefined
         let separator, colonEncountered
         while (separator !== null) {
@@ -242,8 +222,6 @@ const objParser = (input) => {
             }
 
             input = separator[1]
-            // console.log('still inside separator', separator)
-            // console.log('input after consuming separator ' + separator[0] + 'is ' + input)
           }
         }
         if (!colonEncountered) {
@@ -252,33 +230,24 @@ const objParser = (input) => {
         result = valueParser(input)
 
         if (result !== null) {
-          // console.log('value is ', result[0])
-          // console.log('Result retruned', result)
           outputStr[key] = result[0]
           input = result[1]
           let whitespace
           while (whitespace !== null) {
-            // console.log('Checking for whitespace')
             whitespace = whiteSpaceParser(input) || specialCharParser(input)
             if (whitespace !== null) {
               input = input.slice(1)
             }
-
-            // console.log(input)
           }
 
           separator = commaParser(input) || input[0] === '}'
-          // console.log('Expecting comma. Found ', separator)
           if (separator === null || separator === false) {
-            // console.log('separtor err', outputStr)
             return null
           } else {
             if (separator === true) {
-              // console.log('current set: ', outputStr)
               return [outputStr, input.slice(1)]
             } else {
               input = separator[1]
-              // console.log('next iteration starts with ', input)
               continue
             }
           } // comma finder
@@ -289,7 +258,6 @@ const objParser = (input) => {
         return null
       } // end of key finder
     } // end of while loop
-    // console.log('End of object encountered', outputStr)
     return [outputStr, input.slice(1)]
   } else return null
 }
