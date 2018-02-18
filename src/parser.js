@@ -18,28 +18,19 @@ const numParser = (input) => {
   let helperArr = ['','',0]
     if (signParser(input[helperArr[2]]) === '-' || digitParser(input[helperArr[2]])) {
       helperFunction(helperArr, input)
-      while ((digitParser(input[helperArr[2]]) || expParser(input[helperArr[2]]) || input[helperArr[2]] === '.') && helperArr[2] < input.length) {
-        helperFunction(helperArr,input)
-      }
+      while ((digitParser(input[helperArr[2]]) || expParser(input[helperArr[2]]) || input[helperArr[2]] === '.') && helperArr[2] < input.length) {helperFunction(helperArr,input)}
       if (expParser(helperArr[0])) {
-        while ((digitParser(input[helperArr[2]]) || signParser(input[helperArr[2]])) && helperArr[2] < input.length) {
-          helperFunction(helperArr,input)
-        }
+        while ((digitParser(input[helperArr[2]]) || signParser(input[helperArr[2]])) && helperArr[2] < input.length) {helperFunction(helperArr,input)}
       }
       if (helperArr[1][0] === '0') {
-        if (digitParser(input[helperArr[2]])) {
-          return null
-        } else {
-          if (Number(helperArr[1]) >= 0) {
-            return [Number(helperArr[1]), input.slice(helperArr[2])]
-          } else return null
+        if (digitParser(input[helperArr[2]])) return null
+        else {
+          if (Number(helperArr[1]) >= 0) return [Number(helperArr[1]), input.slice(helperArr[2])]
+          else return null
         }
       }
       return [Number(helperArr[1]), input.slice(helperArr[2])]
-    } else {
-      return null
-    }
-  
+    } else return null
 }
 
 const strParser = (input) => {
