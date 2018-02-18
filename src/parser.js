@@ -1,35 +1,35 @@
 #!/usr/bin/env node
-const nullParser = (input) => { if (input.startsWith('null')) {return [null, input.slice(4, input.length)]} else return null}
+const nullParser = (input) => {if (input.startsWith('null')) {return [null, input.slice(4, input.length)]} else return null}
 const boolParser = (input) => {
   if (input.startsWith('true')) {return [true, input.slice(4, input.length)]
   } else if (input.startsWith('false')) {return [false, input.slice(5, input.length)]
   } else return null 
 }
-const digitParser = (input) => {if(input >=0 && input <= 9){return input} else return null}
-const expParser = (input) => {if(input === 'E' || input === 'e'){return input} else return null}
-const signParser = (input) => {if(input === '+' || input === '-'){return input} else return null}
-const helperFunction = (arr, input) => {
+const digitParser = (input) => {if(input >=0 && input <= 9) return input else return null}
+const expParser = (input) => {if(input === 'E' || input === 'e') return input else return null}
+const signParser = (input) => {if(input === '+' || input === '-') return input else return null}
+const helper = (arr, input) => {
  arr[0] = input[arr[2]]
  arr[1] += input[arr[2]]
  arr[2]++
  return arr
 }
 const numParser = (input) => {
-  let helperArr = ['','',0]
-    if (signParser(input[helperArr[2]]) === '-' || digitParser(input[helperArr[2]])) {
-      helperFunction(helperArr, input)
-      while ((digitParser(input[helperArr[2]]) || expParser(input[helperArr[2]]) || input[helperArr[2]] === '.') && helperArr[2] < input.length) {helperFunction(helperArr,input)}
-      if (expParser(helperArr[0])) {
-        while ((digitParser(input[helperArr[2]]) || signParser(input[helperArr[2]])) && helperArr[2] < input.length) {helperFunction(helperArr,input)}
+  let arr = ['','',0]
+    if (signParser(input[arr[2]]) === '-' || digitParser(input[arr[2]])) {
+      helper(arr, input)
+      while ((digitParser(input[arr[2]]) || expParser(input[arr[2]]) || input[arr[2]] === '.') && arr[2] < input.length) {helper(arr,input)}
+      if (expParser(arr[0])) {
+        while ((digitParser(input[arr[2]]) || signParser(input[arr[2]])) && arr[2] < input.length) {helper(arr,input)}
       }
-      if (helperArr[1][0] === '0') {
-        if (digitParser(input[helperArr[2]])) return null
+      if (arr[1][0] === '0') {
+        if (digitParser(input[arr[2]])) return null
         else {
-          if (Number(helperArr[1]) >= 0) return [Number(helperArr[1]), input.slice(helperArr[2])]
+          if (Number(arr[1]) >= 0) return [Number(arr[1]), input.slice(arr[2])]
           else return null
         }
       }
-      return [Number(helperArr[1]), input.slice(helperArr[2])]
+      return [Number(arr[1]), input.slice(arr[2])]
     } else return null
 }
 
