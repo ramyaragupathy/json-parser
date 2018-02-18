@@ -1,66 +1,45 @@
 #!/usr/bin/env node
-const nullParser = (input) => {
-  if (input.startsWith('null')) {
-    return [null, input.slice(4, input.length)]
-  } else return null
-}
-
+const nullParser = (input) => { if (input.startsWith('null')) {return [null, input.slice(4, input.length)]} else return null}
 const boolParser = (input) => {
-  if (input[0] === 't') {
-    let boolValue = input.slice(0, 4)
-    if (boolValue === 'true') {
-      input = input.slice(4, input.length)
-      return [true, input]
-    } else {
-      return null
-    }
-  } else if (input[0] === 'f') {
-    let boolValue = input.slice(0, 5)
-    if (boolValue === 'false') {
-      input = input.slice(5, input.length)
-      return [false, input]
-    } else {
-      return null
-    }
-  } else return null
+  if (input.startsWith('true')) {return [true, input.slice(4, input.length)]
+  } else if (input.startsWith('false')) {return [false, input.slice(5, input.length)]
+  } else return null 
 }
-
+const digitParser = (input) => {if(input >=0 && input <= 9){return input} else return null}
+const expParser = (input) => {if(input === 'E' || input === 'e'){return input} else return null}
+const signParser = (input) => {if(input === '+' || input === '-'){return input} else return null}
+const helperFunction = (arr, input) => {
+ arr[0] = input[arr[2]]
+ arr[1] += input[arr[2]]
+ arr[2]++
+ return arr
+}
 const numParser = (input) => {
-  let prev = ''
-  let outputNum = ''
-  if (prev === '') {
-    if (input[0] === '-' || (input[0] >= 0 && input[0] <= 9)) {
-      prev = input[0]
-      outputNum += prev
-      let i = 1
-      while ((input[i] >= 0 && input[i] <= 9 || input[i] === 'e' ||
-    input[i] === 'E' || input[i] === '.') && i < input.length) {
-        prev = input[i]
-        outputNum += input[i]
-        i++
+  let helperArr = ['','',0]
+    if (signParser(input[helperArr[2]]) === '-' || digitParser(input[helperArr[2]])) {
+      helperFunction(helperArr, input)
+      while ((digitParser(input[helperArr[2]]) || expParser(input[helperArr[2]]) || input[helperArr[2]] === '.') && helperArr[2] < input.length) {
+        helperFunction(helperArr,input)
       }
-      if (prev === 'e' || prev === 'E') {
-        while ((input[i] >= 0 && input[i] <= 9 || input[i] === '-' ||
-        input[i] === '+') && i < input.length) {
-          prev = input[i]
-          outputNum += input[i]
-          i++
+      if (expParser(helperArr[0])) {
+        while ((digitParser(input[helperArr[2]]) || signParser(input[helperArr[2]])) && helperArr[2] < input.length) {
+          helperFunction(helperArr,input)
         }
       }
-      if (outputNum[0] === '0') {
-        if (outputNum[1] >= '0' && outputNum[1] <= '9') {
+      if (helperArr[1][0] === '0') {
+        if (digitParser(input[helperArr[2]])) {
           return null
         } else {
-          if (Number(outputNum) >= 0) {
-            return [Number(outputNum), input.slice(i)]
+          if (Number(helperArr[1]) >= 0) {
+            return [Number(helperArr[1]), input.slice(helperArr[2])]
           } else return null
         }
       }
-      return [Number(outputNum), input.slice(i)]
+      return [Number(helperArr[1]), input.slice(helperArr[2])]
     } else {
       return null
     }
-  }
+  
 }
 
 const strParser = (input) => {
@@ -92,7 +71,6 @@ const strParser = (input) => {
           while (((input[0] >= 'A' && input[0] <= 'F') ||
           (input[0] >= 'a' && input[0] <= 'f') || input[0] >= 0 ||
           input[0] <= 9 && input[0] !== '"') && numHex <= 4) {
-            // console.log(' reading ' + i + ' th character after \\u ' + input[0])
             prev = input[0]
             input = input.slice(1)
             numHex++
@@ -121,22 +99,8 @@ const strParser = (input) => {
   } else return null
 }
 
-const commaParser = (input) => {
-  if (input[0] === ',') {
-    return [input[0], input.slice(1)]
-  } else {
-    return null
-  }
-}
-
-const whiteSpaceParser = (input) => {
-  if (input[0] === ' ') {
-    return [input[0], input.slice(1)]
-  } else {
-    return null
-  }
-}
-
+const commaParser = (input) => {if (input[0] === ',') {return [input[0], input.slice(1)]} else return null}
+const whiteSpaceParser = (input) => {if (input[0] === ' ') {return [input[0], input.slice(1)]} else return null}
 const specialCharParser = (input) => {
   if (input[0] === '\n' || input[0] === '\t' || input[0] === '\b' ||
   input[0] === '\f' || input[0] === '\r') {
