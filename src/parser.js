@@ -26,8 +26,9 @@ const numParser = (input) => {
         if (input[arr[2]] === '.') return null     
       }
     } 
-    return arr[1][0] === '0'? (arr[1].length === 1? [Number(arr[1]),input.slice(arr[2])]:null)
-                            : (Number(arr[1])?[Number(arr[1]), input.slice(arr[2])]:null)
+    return arr[1][0] === '0'? (arr[1].length === 1?[Number(arr[1]),input.slice(arr[2])]: 
+           (arr[1][1] === '.' || expParser(arr[1][1])?[Number(arr[1]),input.slice(arr[2])]:null))
+                                  : (Number(arr[1])?[Number(arr[1]), input.slice(arr[2])]:null)
 } else return null}
 
 const strParser = (input) => {
@@ -42,12 +43,17 @@ const strParser = (input) => {
           else if (input[arr[2]] === 'u') {
             let numHex = 1, hexCode = '0x'
             next(arr, input)
-            while (hexChars(input[arr[2]])) {
-              next(arr, input)
+            while (hexChars(input[arr[2]]) && numHex<=4) {
               numHex++
-              hexCode += arr[1]
+              hexCode += input[arr[2]]
+              next(arr, input)
             }
-            return (numHex === 5) ? (arr[1] = arr[1].slice(0,-5),arr[1] += String.fromCharCode(hexCode)):null    
+            if (numHex === 5) {
+              arr[1] = arr[1].slice(0,-6)
+              arr[1] += String.fromCharCode(hexCode)
+            } else return null   
+          } else if(input[arr[2]] === '"' || input[arr[2]] === '\\'){
+             arr[1] = arr[1].slice(0,-1)
           } 
         } 
         next(arr, input)
@@ -58,32 +64,23 @@ const strParser = (input) => {
 
 const hexChars = (input) => {return ((input >= 'A' && input <= 'F') || (input >= 'a' && input <= 'f') || digitParser(input))? input : null}
 const specialChars = (input) => {return (input === '"' || input === '\\' || input === '/' || input === 'b' || input === 'f' || input === 'n' ||input === 'r' || input === 't' || input === 'u') ? input : null}
-const commaParser = (input) => {if (input[0] === ',') {return [input[0], input.slice(1)]} else return null}
-const whiteSpaceParser = (input) => {if (input[0] === ' ') {return [input[0], input.slice(1)]} else return null}
+const commaParser = (input) => {return (input[0] === ',') ?[input[0], input.slice(1)] :null}
+const whiteSpaceParser = (input) => {return (input[0] === ' ') ? [input[0], input.slice(1)] : null}
 const specialCharParser = (input) => {
-  if (input[0] === '\n' || input[0] === '\t' || input[0] === '\b' ||
-  input[0] === '\f' || input[0] === '\r') {
-    return [input[0], input.slice(1)]
-  } else {
-    return null
-  }
+  return (input[0] === '\n' || input[0] === '\t' || input[0] === '\b' ||
+  input[0] === '\f' || input[0] === '\r')?[input[0], input.slice(1)]:null
 }
 
 const arrParser = (input) => {
   let inpLength = input.length
   if (input[0] === '[' && inpLength > 1) {
-    let i = 1
-    let prev
-    let outputArr = []
-    let result
+    let i = 1, prev, outputArr = [],result
     input = input.slice(1)
     while (input[0] !== ']' && result !== null) {
-      while (whiteSpaceParser(input) !== null || specialCharParser(input) !== null) {
+      while (whiteSpaceParser(input)|| specialCharParser(input)) {
         input = input.slice(1)
       }
-      if (input[0] === ']') {
-        return [outputArr, input.slice(1)]
-      }
+      if (input[0] === ']') {return [outputArr, input.slice(1)]}
       result = valueParser(input) || commaParser(input)
       if (result === null) {
         return null
@@ -93,9 +90,7 @@ const arrParser = (input) => {
       } else {
         if (prev !== ',') {
           prev = ','
-        } else {
-          return null
-        }
+        } else return null  
       }
       input = result[1]
       inpLength = input.length
@@ -103,32 +98,21 @@ const arrParser = (input) => {
     if (result === null) {
       return null
     } else if (input[0] === ']') {
-      if (prev === ',') {
-        return null
-      } else {
-        return [outputArr, input.slice(i)]
-      }
+      return (prev === ',') ?null:[outputArr, input.slice(i)]
     }
   } else return null
 }
-const colonParser = (input) => {
-  if (input[0] === ':') {
-    return [input[0], input.slice(1)]
-  } else {
-    return null
-  }
-}
+const colonParser = (input) => {return (input[0] === ':') ?[input[0], input.slice(1)]:null}
 const objParser = (input) => {
   if (input[0] === '{') {
-    let outputStr = {}, result
+    let outputStr = {}
     input = input.slice(1)
-
+    let result
     while (input[0] !== '}' && result !== null) {
       while (whiteSpaceParser(input) !== null || specialCharParser(input) !== null) {
         input = input.slice(1)
       }
       result = strParser(input)
-
       if (result !== null) {
         input = result[1]
         let key = result[0]
@@ -140,13 +124,10 @@ const objParser = (input) => {
             if (separator[0] === ':') {
               colonEncountered = separator[0]
             }
-
             input = separator[1]
           }
         }
-        if (!colonEncountered) {
-          return null
-        }
+        if (!colonEncountered) {return null}
         result = valueParser(input)
 
         if (result !== null) {
