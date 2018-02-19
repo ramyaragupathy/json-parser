@@ -1,95 +1,63 @@
 #!/usr/bin/env node
-const nullParser = (input) => {if (input.startsWith('null')) {return [null, input.slice(4, input.length)]} else return null}
+const nullParser = (input) => {return input.startsWith('null') ? [null, input.slice(4, input.length)]: null}
 const boolParser = (input) => {
-  if (input.startsWith('true')) {return [true, input.slice(4, input.length)]
-  } else if (input.startsWith('false')) {return [false, input.slice(5, input.length)]
-  } else return null 
+  return input.startsWith('true')?[true, input.slice(4, input.length)]:
+  (input.startsWith('false'))?[false, input.slice(5, input.length)]:null
 }
-const digitParser = (input) => {if(input >=0 && input <= 9) return input else return null}
-const expParser = (input) => {if(input === 'E' || input === 'e') return input else return null}
-const signParser = (input) => {if(input === '+' || input === '-') return input else return null}
-const helper = (arr, input) => {
+const digitParser = (input) => {return (input >=0 && input <= 9) ? input:null}
+const expParser = (input) => {return (input === 'E' || input === 'e') ? input:null}
+const signParser = (input) => {return (input === '+' || input === '-') ? input:null}
+const next = (arr, input) => {
  arr[0] = input[arr[2]]
  arr[1] += input[arr[2]]
  arr[2]++
  return arr
 }
 const numParser = (input) => {
-  let arr = ['','',0]
-    if (signParser(input[arr[2]]) === '-' || digitParser(input[arr[2]])) {
-      helper(arr, input)
-      while ((digitParser(input[arr[2]]) || expParser(input[arr[2]]) || input[arr[2]] === '.') && arr[2] < input.length) {helper(arr,input)}
-      if (expParser(arr[0])) {
-        while ((digitParser(input[arr[2]]) || signParser(input[arr[2]])) && arr[2] < input.length) {helper(arr,input)}
+  let arr = ['', '', 0]
+  if (signParser(input[arr[2]]) === '-' || digitParser(input[arr[2]])) {
+    next(arr, input)
+    while ((digitParser(input[arr[2]]) || expParser(input[arr[2]]) || input[arr[2]] === '.')) {
+      next(arr,input)
+      if (expParser(input[arr[2]])) {
+        next(arr,input) 
+        while ((digitParser(input[arr[2]]) || signParser(input[arr[2]]))) {
+          next(arr, input)}
+        if (input[arr[2]] === '.') return null     
       }
-      if (arr[1][0] === '0') {
-        if (digitParser(input[arr[2]])) return null
-        else {
-          if (Number(arr[1]) >= 0) return [Number(arr[1]), input.slice(arr[2])]
-          else return null
-        }
-      }
-      return [Number(arr[1]), input.slice(arr[2])]
-    } else return null
-}
+    } 
+    return arr[1][0] === '0'? (arr[1].length === 1? [Number(arr[1]),input.slice(arr[2])]:null)
+                            : (Number(arr[1])?[Number(arr[1]), input.slice(arr[2])]:null)
+} else return null}
 
 const strParser = (input) => {
-  let outputStr = ''
   let inpLength = input.length
-  let prev = ''
-  if (input[0] === '"') {
-    input = input.slice(1)
-    let i = 1
-    while (input[0] !== '"' && i < inpLength) {
-      prev = input[0]
-      outputStr += prev
-      input = input.slice(1)
-      i++
-      if (prev === '\\') {
-        outputStr = outputStr.slice(0, -1)
-        prev = input[0]
-        i++
-        let nextChar = (input[0] === '"' || input[0] === '\\' || input[0] === '/' ||
-        input[0] === 'b' || input[0] === 'f' || input[0] === 'n' ||
-        input[0] === 'r' || input[0] === 't' || input[0] === 'u')
-        if (nextChar === false) {
-          return null
-        } else if (input[0] === 'u') {
-          prev = input[0]
-          let numHex = 1
-          let hexCode = '0x'
-          input = input.slice(1)
-          while (((input[0] >= 'A' && input[0] <= 'F') ||
-          (input[0] >= 'a' && input[0] <= 'f') || input[0] >= 0 ||
-          input[0] <= 9 && input[0] !== '"') && numHex <= 4) {
-            prev = input[0]
-            input = input.slice(1)
-            numHex++
-            hexCode += prev
-          }
-          prev = input[0]
-          if (numHex === 5) {
-            outputStr += String.fromCharCode(hexCode)
-
-            continue
-          } else {
-            return null
-          }
-        } else {
-          prev = input[0]
-          outputStr += prev
-          input = input.slice(1)
-        }
-      } // end of control char check
-    } // end of while
-    prev = input[0]
-
-    if (prev === '"') {
-      return [outputStr, input.slice(1)]
-    } else return null
+  let arr = ['','',0]
+  if (input[arr[2]] === '"') {
+      next(arr, input)
+      while(input[arr[2]] !== '"' && arr[2] < inpLength){
+        if (input[arr[2]] === '\\') {
+          next(arr, input)
+          if (!specialChars(input[arr[2]])) {return null} 
+          else if (input[arr[2]] === 'u') {
+            let numHex = 1, hexCode = '0x'
+            next(arr, input)
+            while (hexChars(input[arr[2]])) {
+              next(arr, input)
+              numHex++
+              hexCode += arr[1]
+            }
+            return (numHex === 5) ? (arr[1] = arr[1].slice(0,-5),arr[1] += String.fromCharCode(hexCode)):null    
+          } 
+        } 
+        next(arr, input)
+      }
+    return (input[arr[2]] === '"') ?[arr[1].slice(1), input.slice(arr[2]+1)]:null
   } else return null
 }
 
+const hexChars = (input) => {return ((input >= 'A' && input <= 'F') || (input >= 'a' && input <= 'f') || digitParser(input))? input : null}
+const specialChars = (input) => {return (input === '"' || input === '\\' || input === '/' || input === 'b' || input === 'f' || input === 'n' ||input === 'r' || input === 't' || input === 'u') ? input : null}
 const commaParser = (input) => {if (input[0] === ',') {return [input[0], input.slice(1)]} else return null}
 const whiteSpaceParser = (input) => {if (input[0] === ' ') {return [input[0], input.slice(1)]} else return null}
 const specialCharParser = (input) => {
@@ -152,9 +120,8 @@ const colonParser = (input) => {
 }
 const objParser = (input) => {
   if (input[0] === '{') {
-    let outputStr = {}
+    let outputStr = {}, result
     input = input.slice(1)
-    let result
 
     while (input[0] !== '}' && result !== null) {
       while (whiteSpaceParser(input) !== null || specialCharParser(input) !== null) {
